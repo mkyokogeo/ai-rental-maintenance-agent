@@ -10,4 +10,4 @@ Telegram was our demo choice purely for speed: WhatsApp needs Business API appro
 Roadmap (out of scope): landlord-side smart-home sensors so the agent detects and resolves issues proactively, eventually without the tenant reporting anything at all.
 
 # Components
-exa-specialists-finder — Service that finds and ranks local repair specialists (plumbers, electricians, locksmiths) in Spain, and stores them in Postgres. Uses Exa API to search for specialists by city and pull their Google rating, Express for its HTTP endpoint, and `pg` to persist results.
+- **exa-specialists-finder** — Service that finds and ranks local repair specialists (plumbers, electricians, locksmiths) in Spain, and stores them in Postgres. Uses Exa API to search for specialists by city and pull their Google rating, Express for its HTTP endpoint, and `pg` to persist results.
