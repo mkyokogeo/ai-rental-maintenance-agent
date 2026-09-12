@@ -14,6 +14,7 @@ The repair visit itself is outside this project's scope. Telegram is the demo ch
 | --- | --- | --- |
 | [`exa-specialists-finder`](./exa-specialists-finder) | Finds plumbers, electricians, and locksmiths by Spanish city, enriches/ranks results, and persists provider data. | TypeScript, Express, Exa, PostgreSQL |
 | [`homeops-provider-service`](./homeops-provider-service) | Resolves the tenant, property, and landlord; selects an eligible provider; records request state; and handles signed provider responses. | Python, FastAPI, PostgreSQL/Supabase |
+| [`telegrambot`](./telegrambot) | Talks to the tenant in Telegram, triages the incident (text, photos, and voice notes) with an LLM, asks for a technician only after explicit confirmation, and hands the structured incident off to HomeOps by email; also runs the webhook that relays provider accept/reject events back to the tenant and landlord. | Node.js, OpenAI (chat, transcription), Telegram Bot API, Nodemailer |
 
 
 
@@ -67,6 +68,17 @@ npm run dev
 curl -X POST http://127.0.0.1:3000/specialists \
   -H 'Content-Type: application/json' \
   -d '{"city":"Valencia"}'
+```
+
+## Telegram triage bot
+
+The `telegrambot` service polls Telegram for guest messages, builds up conversation state per chat (text, photos, and transcribed voice notes), and only asks to search for a technician once the guest explicitly confirms and gives a preferred time. It then structures the incident as JSON, posts it to HomeOps (`ENGINEER_MATCH_URL`), emails the matched technician an accept/decline link, and notifies the landlord in Telegram. A built-in webhook server receives HomeOps' acceptance/rejection callback and relays it to the tenant and landlord chats.
+
+```bash
+cd telegrambot
+npm install
+# Set TELEGRAM_BOT_TOKEN, OPENAI_API_KEY, ENGINEER_MATCH_URL, and SMTP_* in .env
+npm start
 ```
 
 ## Data and security
