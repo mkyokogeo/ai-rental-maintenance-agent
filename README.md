@@ -1,3 +1,22 @@
+
+
+```
+
+# AI Rental Maintenance Agent
+AI Rental Maintenance Agent removes the multi-day back-and-forth every rental repair causes today. A tenant who finds a leak or broken appliance has to text an often-unresponsive landlord, who then manually finds and negotiates with a specialist, coordinates access, and tracks the fix with no shared record. This hits individual landlords hardest, since they don't run a property-management platform.
+
+The agent lives inside Telegram, the channel tenants and landlords already use, as two synced conversations: a Tenant chat for reporting an issue with a photo or voice note, and a Landlord chat that stays updated as the case moves. OpenAI transcribes voice reports to text and classifies the issue type and likely cause straight from the photo, no form needed. The agent then picks a matching specialist and emails them the full problem and address; the specialist just accepts or declines. Once accepted, both tenant and landlord get notified in Telegram. This isn't a chatbot you consult: it's a case the agent keeps open for days until a specialist accepts and a visit is scheduled, which a single chat session can't do. The repair visit itself is outside this build's scope.
+
+The backend runs on Python: one service handles Telegram bot logic, creates and tracks each case, and returns matched specialist contact details to the landlord; another runs the triage agent that determines the issue type. A TypeScript service queries Exa and pre-fills a specialists table by region, enriching each match with a contact email plus rating and price signals where public data allows. Supabase (Postgres) holds the case across three linked entities: landlords/properties, tenants, and service providers, matching each Telegram user ID to its record directly, no separate auth layer needed. Photos aren't stored, just linked from Telegram's own hosting. Tenant/landlord messaging runs on the Telegram Bot API; specialist outreach runs by email.
+
+Telegram was our demo choice purely for speed: WhatsApp needs Business API approval that doesn't fit a one-day build, Telegram's Bot API needs none. The agent is platform-agnostic: the same triage and matching logic would run unchanged on WhatsApp.
+
+Roadmap (out of scope): landlord-side smart-home sensors so the agent detects and resolves issues proactively, eventually without the tenant reporting anything at all.
+
+# Components
+- **exa-specialists-finder** — Service that finds and ranks local repair specialists (plumbers, electricians, locksmiths) in Spain, and stores them in Postgres. Uses Exa API to search for specialists by city and pull their Google rating, Express for its HTTP endpoint, and `pg` to persist results.
+
+
 # AI Property Maintenance Agent — Telegram MVP
 
 MVP de un agente que recibe incidencias de huéspedes por Telegram y prepara un aviso para un técnico.
@@ -41,4 +60,3 @@ Arranque:
 
 ```bash
 npm run telegram
-```
