@@ -1,16 +1,10 @@
-import 'dotenv/config';
-import Exa from 'exa-js';
+import { exa } from './exaInstance';
 import { Specialty, Specialist, FindSpecialistsResult } from './types';
 import { buildQuery } from './buildQuery';
 import { specialistsSchema } from './schema';
 import { saveServiceProviders } from './serviceProvidersRepo';
-
-const apiKey = process.env.EXA_API_KEY;
-if (!apiKey) {
-  throw new Error('EXA_API_KEY is not set. Add it to your .env file.');
-}
-
-const exa = new Exa(apiKey);
+import { findGoogleRating } from './findGoogleRating';
+import { computeRankScore } from './rankScore';
 
 interface AnswerPayload {
   specialists: Specialist[];
@@ -27,8 +21,15 @@ export async function findSpecialists(
 
   const answer = response.answer as unknown as AnswerPayload;
 
-  const specialists = (answer.specialists ?? []).filter(
+  const withEmail = (answer.specialists ?? []).filter(
     (s) => typeof s.email === 'string' && s.email.trim().length > 0
+  );
+
+  const specialists = await Promise.all(
+    withEmail.map(async (s) => {
+      const { rating, reviewsCount } = await findGoogleRating(s.name, s.city ?? city);
+      return { ...s, rankScore: computeRankScore(rating, reviewsCount) };
+    })
   );
 
   await saveServiceProviders(specialty, specialists);
