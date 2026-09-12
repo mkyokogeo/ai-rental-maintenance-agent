@@ -1,0 +1,22 @@
+{
+  "name": "ai-property-maintenance-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Telegram MVP for AI-assisted property maintenance incidents",
+  "scripts": {
+    "start": "node src/index.js",
+    "telegram": "node src/telegram.js",
+    "db:read": "node src/db-read.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@openai/agents": "^0.18.0",
+    "dotenv": "^17.4.2",
+    "nodemailer": "^10.0.9",
+    "pg": "^8.23.0",
+    "zod": "^4.6.2"
+  }
+}
